@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "title": "Backlog",
+    "statusId": 1
+  },
+  {
+    "id": 2,
+    "title": "Fazendo",
+    "statusId": 2
+  },
+  {
+    "id": 3,
+    "title": "Testando",
+    "statusId": 3
+  },
+  {
+    "id": 4,
+    "title": "Concluído",
+    "statusId": 4
+  }
+]

@@ -1,49 +1,86 @@
-
-
-import { FaWhatsapp } from "react-icons/fa";
 import Header from "./components/Header";
-import Card from "./components/Card";
-import pizzaItems from "./utils/pizzaItems.json"
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import CardColumn from "./components/CardColumn";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import jsonCards from "./utils/cards.json";
+import jsonColumns from "./utils/columns.json";
+import { useSupabase } from './context/supabaseContext';
+import ICard from "./utils/ICard";
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
+  const [cards, setCards] = useState(jsonCards);
+  const [loading, setLoading] = useState(true);
+  const supabase = useSupabase();
 
+  useEffect(() => {
+    const getData = async () => {
+      if (supabase) {
+        const { data, error } = await supabase.from('tasks').select('*');
+        if (error) {
+          console.error('Erro ao buscar dados de tarefas:', error);
+          setLoading(false);
+          return;
+        }
+        if (!data?.length) {
+          setLoading(false);
+          return;
+        }
+        setCards(data);
+        setLoading(false);
+      }
+    };
+    getData();
+    
+  }, [supabase]);
+
+  const onMoveCard = ({ updatedCard }: { updatedCard: ICard }) => {
+    const card = cards.find((card) => card.id === updatedCard.id);
+    if (!card || card?.statusId === updatedCard.statusId) {
+      return;
+    }
+    const newCards = [
+      ...cards.filter((card) => card.id !== updatedCard.id),
+      updatedCard,
+    ];
+    setCards(newCards);
+  };
   return (
     <div className={darkMode ? "dark" : ""}>
-      <Header darkMode={darkMode} setDarkMode={setDarkMode}/>
-      <main className="flex flex-col gap-24 py-16 px-6 min-h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="flex items-center justify-center gap-48">
-          <div className="max-w-xl">
-            <h1 className="text-5xl md:text-6xl mb-8 font-bold text-teal-900 dark:text-emerald-400">Experimente o sabor que você jamais vai esquecer</h1>
-            <a href="#menu" className="bg-red-900 text-white px-4 py-2 rounded shadow-md hover:bg-red-800 transition duration-300">Confira o cardápio</a>
-          </div>
-          <div className="hidden md:block max-w-96">
-            <img className="max-w-96 rounded-lg shadow-lg" src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Pizza carro-chefe"/>
-          </div>
+      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+      <main className="flex flex-col py-4 px-6 min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="flex flex-col items-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-teal-900 dark:text-emerald-400">
+            Tarefas
+          </h2>
         </div>
-        <div className="flex flex-col items-center" id="menu">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-teal-900 dark:text-emerald-400">Nosso cardápio</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {pizzaItems.map((pizzaItem) => {
-              return <Card title={pizzaItem.title} price={pizzaItem.price} imageLink={pizzaItem.imgUrl} />
+        <div className="grid grid-flow-col auto-cols-fr gap-4">
+          <DndProvider backend={HTML5Backend}>
+            {!loading && jsonColumns.map((column) => {
+              return (
+                <CardColumn
+                  title={column.title}
+                  key={column.id}
+                  statusId={column.statusId}
+                  onMoveCard={onMoveCard}
+                  cards={cards.filter(
+                    (card) => card.statusId === column.statusId
+                  )}
+                />
+              );
             })}
-          </div>
-          <a 
-              href="https://wa.me/551132303223"
-              target="_blank" 
-              className="w-82 flex justify-between items-center gap-2 mt-6 bg-red-900 text-white px-4 py-2 rounded shadow-md hover:bg-red-800 transition duration-300"
-          >
-            <span>Gostei, quero comprar!</span> 
-            <FaWhatsapp/>
-          </a>
+            {loading && <div>Carregando</div>}
+          </DndProvider>
         </div>
       </main>
-      <footer className="bg-white py-6 px-4 flex justify-center dark:bg-slate-800">
-          <p className="text-gray-600 text-center dark:text-gray-300">© 2024 Pizzaria Deliciosa. Esta é uma página fictícia.</p>
+      <footer className=" py-6 px-4 flex justify-center bg-white dark:bg-slate-800">
+        <p className="text-gray-600 text-center dark:text-gray-300">
+          Esta é uma página fictícia.
+        </p>
       </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

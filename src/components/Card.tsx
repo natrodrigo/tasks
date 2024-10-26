@@ -1,21 +1,33 @@
-
+import { useDrag } from "react-dnd";
 
 interface IProps {
+  id: number;
   title: string;
-  imageLink: string;
-  price: string;
+  statusId: number;
 }
 
-export default function Card({ imageLink, title, price }: IProps) {
+export default function Card({ id, title, statusId }: IProps) {
+  const card = { id, title, statusId };
+  const [, dragRef] = useDrag({
+    type: "card",
+    item: card,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
   return (
-    <div className="bg-white rounded-lg p-6 flex flex-col items-center text-center hover:shadow-lg dark:bg-slate-800">
-      <span className="text-2xl font-medium text-gray-800 dark:text-white">{title}</span>
-      <img
-        src={imageLink}
-        alt={title}
-        className="my-4 h-56 w-full object-cover rounded-lg"
-      />
-      <p className="text-gray-600 dark:text-white">{price}</p>
+    <div
+      ref={dragRef}
+      className="rounded-lg px-4 py-1 flex flex-col border border-gray-600 hover:border-emerald-700 bg-white dark:bg-gray-700"
+    >
+      <span className="text-center mb-2 text-xl font-medium text-gray-800 dark:text-white">
+        {title}
+      </span>
+      <span className="text-sm font-medium text-gray-800 dark:text-white">
+        Descrição da minha tarefa, descrição da minha tarefa, descrição da minha
+        tarefa.
+      </span>
     </div>
   );
 }

@@ -5,8 +5,9 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import jsonCards from "./utils/cards.json";
 import jsonColumns from "./utils/columns.json";
-import { useSupabase } from './context/supabaseContext';
+import { useSupabase } from "./context/supabaseContext";
 import ICard from "./utils/ICard";
+import toast, { Toaster } from "react-hot-toast";
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -17,13 +18,17 @@ function App() {
   useEffect(() => {
     const getData = async () => {
       if (supabase) {
-        const { data, error } = await supabase.from('tasks').select('*');
+        const { data, error } = await supabase.from("tasks").select("*");
         if (error) {
-          console.error('Erro ao buscar dados de tarefas:', error);
+          toast.error(
+            `Erro ao buscar dados de tarefas:${error.message || " "}`
+          );
+          console.error(error);
           setLoading(false);
           return;
         }
         if (!data?.length) {
+          toast(`Sem dados`);
           setLoading(false);
           return;
         }
@@ -32,10 +37,9 @@ function App() {
       }
     };
     getData();
-    
   }, [supabase]);
 
-  const onMoveCard = ({ updatedCard }: { updatedCard: ICard }) => {
+  const onMoveCard = async ({ updatedCard }: { updatedCard: ICard }) => {
     const card = cards.find((card) => card.id === updatedCard.id);
     if (!card || card?.statusId === updatedCard.statusId) {
       return;
@@ -45,9 +49,28 @@ function App() {
       updatedCard,
     ];
     setCards(newCards);
+    if (supabase) {
+      const toastId = toast.loading("Loading...");
+      const { error } = await supabase
+        .from("tasks")
+        .update({ statusId: updatedCard.statusId }) // Dados a serem atualizados
+        .eq("id", updatedCard.id);
+
+      if (error) {
+        toast.error(`Erro ao atualizar card: ${error.message || " "}`, {
+          id: toastId,
+        });
+        console.error(error);
+        return;
+      }
+      toast.success(`Card editado com sucesso!`, {
+        id: toastId,
+      });
+    }
   };
   return (
     <div className={darkMode ? "dark" : ""}>
+      <Toaster position="bottom-left" />
       <Header darkMode={darkMode} setDarkMode={setDarkMode} />
       <main className="flex flex-col py-4 px-6 min-h-screen bg-gray-100 dark:bg-gray-900">
         <div className="flex flex-col items-center">
@@ -57,19 +80,20 @@ function App() {
         </div>
         <div className="grid grid-flow-col auto-cols-fr gap-4">
           <DndProvider backend={HTML5Backend}>
-            {!loading && jsonColumns.map((column) => {
-              return (
-                <CardColumn
-                  title={column.title}
-                  key={column.id}
-                  statusId={column.statusId}
-                  onMoveCard={onMoveCard}
-                  cards={cards.filter(
-                    (card) => card.statusId === column.statusId
-                  )}
-                />
-              );
-            })}
+            {!loading &&
+              jsonColumns.map((column) => {
+                return (
+                  <CardColumn
+                    title={column.title}
+                    key={column.id}
+                    statusId={column.statusId}
+                    onMoveCard={onMoveCard}
+                    cards={cards.filter(
+                      (card) => card.statusId === column.statusId
+                    )}
+                  />
+                );
+              })}
             {loading && <div>Carregando</div>}
           </DndProvider>
         </div>

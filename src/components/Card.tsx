@@ -4,10 +4,11 @@ interface IProps {
   id: number;
   title: string;
   statusId: number;
+  description?: string;
 }
 
-export default function Card({ id, title, statusId }: IProps) {
-  const card = { id, title, statusId };
+export default function Card({ id, title, statusId, description ='' }: IProps) {
+  const card = { id, title, statusId, description };
   const [, dragRef] = useDrag({
     type: "card",
     item: card,
@@ -25,8 +26,7 @@ export default function Card({ id, title, statusId }: IProps) {
         {title}
       </span>
       <span className="text-sm font-medium text-gray-800 dark:text-white">
-        Descrição da minha tarefa, descrição da minha tarefa, descrição da minha
-        tarefa.
+        {description}
       </span>
     </div>
   );

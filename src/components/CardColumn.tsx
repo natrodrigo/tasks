@@ -36,6 +36,7 @@ export default function CardColumn({
             id={card.id}
             title={card.title}
             statusId={card.statusId}
+            description={card.description}
           />
         );
       })}

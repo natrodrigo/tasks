@@ -20,12 +20,12 @@ export default function Card({ id, title, statusId, description ='' }: IProps) {
   return (
     <div
       ref={dragRef}
-      className="rounded-lg px-4 py-1 flex flex-col border border-gray-600 hover:border-emerald-700 bg-white dark:bg-gray-700"
+      className=" rounded-lg px-4 py-1 flex flex-col border border-gray-600 hover:border-emerald-700 bg-white dark:bg-gray-700"
     >
-      <span className="text-center mb-2 text-xl font-medium text-gray-800 dark:text-white">
+      <span className="overflow-hidden text-ellipsis text-center mb-2 text-xl font-medium text-gray-800 dark:text-white">
         {title}
       </span>
-      <span className="text-sm font-medium text-gray-800 dark:text-white">
+      <span className="overflow-hidden text-ellipsis text-sm font-medium text-gray-800 dark:text-white">
         {description}
       </span>
     </div>

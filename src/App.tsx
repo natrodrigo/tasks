@@ -6,12 +6,12 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import jsonCards from "./utils/cards.json";
 import jsonColumns from "./utils/columns.json";
 import { useSupabase } from "./context/supabaseContext";
-import ICard from "./utils/ICard";
+import ITask from "./utils/ITask";
 import toast, { Toaster } from "react-hot-toast";
 
 function App() {
   const [darkMode, setDarkMode] = useState(true);
-  const [cards, setCards] = useState(jsonCards);
+  const [tasks, setTasks] = useState(jsonCards);
   const [loading, setLoading] = useState(true);
   const supabase = useSupabase();
 
@@ -32,29 +32,29 @@ function App() {
           setLoading(false);
           return;
         }
-        setCards(data);
+        setTasks(data);
         setLoading(false);
       }
     };
     getData();
   }, [supabase]);
 
-  const onMoveCard = async ({ updatedCard }: { updatedCard: ICard }) => {
-    const card = cards.find((card) => card.id === updatedCard.id);
-    if (!card || card?.statusId === updatedCard.statusId) {
+  const onMoveCard = async ({ updatedTask }: { updatedTask: ITask }) => {
+    const task = tasks.find((card) => card.id === updatedTask.id);
+    if (!task || task?.statusId === updatedTask.statusId) {
       return;
     }
     const newCards = [
-      ...cards.filter((card) => card.id !== updatedCard.id),
-      updatedCard,
+      ...tasks.filter((task) => task.id !== updatedTask.id),
+      updatedTask,
     ];
-    setCards(newCards);
+    setTasks(newCards);
     if (supabase) {
       const toastId = toast.loading("Loading...");
       const { error } = await supabase
         .from("tasks")
-        .update({ statusId: updatedCard.statusId }) // Dados a serem atualizados
-        .eq("id", updatedCard.id);
+        .update({ statusId: updatedTask.statusId }) // Dados a serem atualizados
+        .eq("id", updatedTask.id);
 
       if (error) {
         toast.error(`Erro ao atualizar card: ${error.message || " "}`, {
@@ -68,6 +68,40 @@ function App() {
       });
     }
   };
+
+  const handleOnCreateTask = async (event: React.FormEvent<HTMLFormElement>, statusId:number, setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>) => {
+    event.preventDefault();
+    const toastId = toast.loading("Criando tarefa...");
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    const {title, description} = data as unknown as ITask;
+    const newTask = {title, description, statusId} as ITask;
+    if (!newTask.title) {
+      toast.error('O título é obrigatório', {
+        id: toastId,
+      });
+      return;
+    }
+    if (!supabase) {
+      toast.error('Não foi possível conectar com servidor', {
+        id: toastId,
+      });
+      return;
+    }
+    const {error} = await supabase.from('tasks').insert(newTask)
+    if (error) {
+      toast.error(`Erro ao criar tarefa: ${error.name}`, {
+        id: toastId,
+      });
+      return;
+    }
+    setTasks(prev=> [...prev, newTask]);
+    setIsDropdownOpen(false);
+    toast.success(`Tarefa criada com sucesso`, {
+      id: toastId,
+    });
+  }
+
   return (
     <div className={darkMode ? "dark" : ""}>
       <Toaster position="bottom-left" />
@@ -88,8 +122,9 @@ function App() {
                     key={column.id}
                     statusId={column.statusId}
                     onMoveCard={onMoveCard}
-                    cards={cards.filter(
-                      (card) => card.statusId === column.statusId
+                    handleOnCreateTask={handleOnCreateTask}
+                    cards={tasks.filter(
+                      (task) => task.statusId === column.statusId
                     )}
                   />
                 );

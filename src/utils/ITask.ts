@@ -1,4 +1,4 @@
-interface ICard {
+interface ITask {
   id: number;
   title: string;
   statusId: number;
@@ -6,4 +6,4 @@ interface ICard {
   description?: string;
 }
 
-export default ICard;
+export default ITask;

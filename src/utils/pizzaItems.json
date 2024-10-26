@@ -1,0 +1,32 @@
+[
+    {
+      "title":"Portuguesa",
+      "imgUrl":"https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?q=80&w=1450&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "price":"R$ 52,00"
+    },
+    {
+      "title":"Marguerita",
+      "imgUrl":"https://images.unsplash.com/photo-1573821663912-569905455b1c?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "price":"R$ 48,00"
+    },
+    {
+      "title":"4 Queijos",
+      "imgUrl":"https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "price":"R$ 52,00"
+    },
+    {
+      "title":"Romanesca",
+      "imgUrl":"https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "price":"R$ 56,00"
+    },
+    {
+      "title":"Peperoni",
+      "imgUrl":"https://images.unsplash.com/photo-1601924582970-9238bcb495d9?q=80&w=1376&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "price":"R$ 48,00"
+    },
+    {
+      "title":"Siciliana",
+      "imgUrl":"https://images.unsplash.com/photo-1604917877934-07d8d248d396?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "price":"R$ 56,00"
+    }
+  ]

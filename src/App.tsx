@@ -6,7 +6,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import jsonCards from "./utils/cards.json";
 import jsonColumns from "./utils/columns.json";
 import { useSupabase } from "./context/supabaseContext";
-import ITask from "./utils/ITask";
+import ITask from "./types/ITask";
 import toast, { Toaster } from "react-hot-toast";
 
 function App() {
@@ -50,7 +50,7 @@ function App() {
     ];
     setTasks(newCards);
     if (supabase) {
-      const toastId = toast.loading("Loading...");
+      const toastId = toast.loading("Carregando...");
       const { error } = await supabase
         .from("tasks")
         .update({ statusId: updatedTask.statusId }) // Dados a serem atualizados
@@ -69,38 +69,63 @@ function App() {
     }
   };
 
-  const handleOnCreateTask = async (event: React.FormEvent<HTMLFormElement>, statusId:number, setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>) => {
+  const handleOnCreateTask = async (
+    event: React.FormEvent<HTMLFormElement>,
+    statusId: number,
+    setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
     event.preventDefault();
     const toastId = toast.loading("Criando tarefa...");
     const formData = new FormData(event.currentTarget);
     const data = Object.fromEntries(formData.entries());
-    const {title, description} = data as unknown as ITask;
-    const newTask = {title, description, statusId} as ITask;
+    const { title, description } = data as unknown as ITask;
+    const newTask = { title, description, statusId } as ITask;
     if (!newTask.title) {
-      toast.error('O título é obrigatório', {
+      toast.error("O título é obrigatório", {
         id: toastId,
       });
       return;
     }
     if (!supabase) {
-      toast.error('Não foi possível conectar com servidor', {
+      toast.error("Não foi possível conectar com servidor", {
         id: toastId,
       });
       return;
     }
-    const {error} = await supabase.from('tasks').insert(newTask)
+    const { error } = await supabase.from("tasks").insert(newTask);
     if (error) {
       toast.error(`Erro ao criar tarefa: ${error.name}`, {
         id: toastId,
       });
       return;
     }
-    setTasks(prev=> [...prev, newTask]);
+    setTasks((prev) => [...prev, newTask]);
     setIsDropdownOpen(false);
     toast.success(`Tarefa criada com sucesso`, {
       id: toastId,
     });
-  }
+  };
+
+  const handleOnDeleteTask = async (id: number) => {
+    const toastId = toast.loading("Deletando...");
+    if (!supabase) {
+      toast.error("Não foi possível conectar com servidor", {
+        id: toastId,
+      });
+      return;
+    }
+    const { error } = await supabase.from("tasks").delete().eq("id", id);
+    if (error) {
+      toast.error(`Erro ao deletar tarefa: ${error.name}`, {
+        id: toastId,
+      });
+      return;
+    }
+    toast.success(`Tarefa deletada com sucesso`, {
+      id: toastId,
+    });
+    setTasks((prev) => prev.filter((p) => p.id !== id));
+  };
 
   return (
     <div className={darkMode ? "dark" : ""}>
@@ -118,14 +143,15 @@ function App() {
               jsonColumns.map((column) => {
                 return (
                   <CardColumn
-                    title={column.title}
                     key={column.id}
-                    statusId={column.statusId}
-                    onMoveCard={onMoveCard}
-                    handleOnCreateTask={handleOnCreateTask}
                     cards={tasks.filter(
                       (task) => task.statusId === column.statusId
                     )}
+                    title={column.title}
+                    statusId={column.statusId}
+                    onMoveCard={onMoveCard}
+                    handleOnCreateTask={handleOnCreateTask}
+                    handleOnDeleteTask={handleOnDeleteTask}
                   />
                 );
               })}

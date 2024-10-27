@@ -1,4 +1,4 @@
-import ITask from "../utils/ITask";
+import ITask from "../types/ITask";
 import Card from "./Card";
 import { useDrop } from "react-dnd";
 import { FaPlus } from "react-icons/fa6";
@@ -16,7 +16,12 @@ interface IProps {
   cards: ITask[];
   statusId: number;
   onMoveCard: ({ updatedTask }: { updatedTask: ITask }) => void;
-  handleOnCreateTask: (event: React.FormEvent<HTMLFormElement>, statusId: number, setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>) => Promise<void>
+  handleOnCreateTask: (
+    event: React.FormEvent<HTMLFormElement>,
+    statusId: number,
+    setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>
+  ) => Promise<void>;
+  handleOnDeleteTask: (id: number) => void;
 }
 export default function CardColumn({
   title,
@@ -24,6 +29,7 @@ export default function CardColumn({
   statusId,
   onMoveCard,
   handleOnCreateTask,
+  handleOnDeleteTask,
 }: IProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { refs, floatingStyles, context } = useFloating({
@@ -47,12 +53,31 @@ export default function CardColumn({
   };
 
   const dropdownContent = (
-    <form className="flex flex-col gap-2 py-2" onSubmit={(event) => handleOnCreateTask(event, statusId, setIsDropdownOpen)}>
-      <label htmlFor="title" className="text-gray-100">Título</label>
+    <form
+      className="flex flex-col gap-2 py-2"
+      onSubmit={(event) =>
+        handleOnCreateTask(event, statusId, setIsDropdownOpen)
+      }
+    >
+      <label htmlFor="title" className="text-gray-100">
+        Título
+      </label>
       <input id="title" name="title" type="text" className="rounded p-1" />
-      <label htmlFor="description" className="text-gray-100">Descrição</label>
-      <textarea id="description" name="description" className="rounded p-1" rows={8}/>
-      <button type="submit" className="mt-2 rounded border border-slate-400 text-white hover:border-emerald-400">Criar</button>
+      <label htmlFor="description" className="text-gray-100">
+        Descrição
+      </label>
+      <textarea
+        id="description"
+        name="description"
+        className="rounded p-1"
+        rows={8}
+      />
+      <button
+        type="submit"
+        className="mt-2 rounded border border-slate-400 text-white hover:border-emerald-400"
+      >
+        Criar
+      </button>
     </form>
   );
   return (
@@ -93,7 +118,9 @@ export default function CardColumn({
                 id={card.id}
                 title={card.title}
                 statusId={card.statusId}
+                createDate={card.createDate}
                 description={card.description}
+                handleOnDeleteTask={handleOnDeleteTask}
               />
             );
           })}

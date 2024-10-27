@@ -31,7 +31,7 @@ export default function Card({
   return (
     <div
       ref={dragRef}
-      className="group rounded-lg px-4 py-1 flex flex-col border border-gray-600 hover:border-emerald-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+      className="group rounded-lg px-4 py-1 flex flex-col border border-gray-500 text-gray-800 bg-gray-50 dark:bg-gray-700 dark:text-white hover:border-emerald-700"
     >
       <span className="overflow-hidden text-ellipsis text-center mb-2 text-xl font-medium">
         {title}
@@ -41,7 +41,7 @@ export default function Card({
       </span>
       <div className="flex justify-between mt-4 text-xs">
         <div
-          className="cursor-pointer opacity-0 group-hover:opacity-100"
+          className="cursor-pointer opacity-0 group-hover:opacity-100 text-red-500"
           onClick={() => handleOnDeleteTask(id)}
         >
           <FaTrashCan />

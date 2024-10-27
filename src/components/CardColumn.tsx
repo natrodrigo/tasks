@@ -13,9 +13,9 @@ import Dropdown from "./Dropdown";
 
 interface IProps {
   title: string;
-  cards: ITask[];
+  tasks: ITask[];
   statusId: number;
-  onMoveCard: ({ updatedTask }: { updatedTask: ITask }) => void;
+  onMoveTask: ({ updatedTask }: { updatedTask: ITask }) => void;
   handleOnCreateTask: (
     event: React.FormEvent<HTMLFormElement>,
     statusId: number,
@@ -25,9 +25,9 @@ interface IProps {
 }
 export default function CardColumn({
   title,
-  cards,
+  tasks,
   statusId,
-  onMoveCard,
+  onMoveTask,
   handleOnCreateTask,
   handleOnDeleteTask,
 }: IProps) {
@@ -44,7 +44,7 @@ export default function CardColumn({
   const [, dropRef] = useDrop({
     accept: "card",
     drop: (updatedTask: ITask) => {
-      onMoveCard({ updatedTask: { ...updatedTask, statusId: statusId } });
+      onMoveTask({ updatedTask: { ...updatedTask, statusId: statusId } });
     },
   });
 
@@ -59,11 +59,11 @@ export default function CardColumn({
         handleOnCreateTask(event, statusId, setIsDropdownOpen)
       }
     >
-      <label htmlFor="title" className="text-gray-100">
+      <label htmlFor="title" className="text-gray-950 dark:text-gray-100">
         Título
       </label>
       <input id="title" name="title" type="text" className="rounded p-1" />
-      <label htmlFor="description" className="text-gray-100">
+      <label htmlFor="description" className="text-gray-950 dark:text-gray-100">
         Descrição
       </label>
       <textarea
@@ -74,7 +74,7 @@ export default function CardColumn({
       />
       <button
         type="submit"
-        className="mt-2 rounded border border-slate-400 text-white hover:border-emerald-400"
+        className="mt-2 rounded border border-slate-400 text-gray-950 dark:text-gray-100 hover:border-emerald-400"
       >
         Criar
       </button>
@@ -94,16 +94,16 @@ export default function CardColumn({
 
       <div
         ref={dropRef}
-        className="rounded-lg flex flex-col pt-2 p-4 grow bg-white dark:bg-slate-800"
+        className="rounded-lg flex flex-col pt-2 p-4 grow bg-gray-200 dark:bg-slate-800"
       >
-        <div className="flex justify-between mb-2 ">
+        <div className="flex justify-between mb-2">
           <h2 className="overflow-hidden text-ellipsis text-2xl text-center font-bold text-teal-900 dark:text-emerald-400">
             {title}
           </h2>
           <div
             ref={refs.setReference}
             onClick={toggleDropdown}
-            className="p-1 cursor-pointer rounded place-self-end text-black dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-500"
+            className="p-1 cursor-pointer rounded place-self-end text-black dark:text-gray-200 hover:bg-gray-300 hover:dark:bg-slate-600"
             {...getReferenceProps()}
           >
             <FaPlus />
@@ -111,15 +111,15 @@ export default function CardColumn({
         </div>
 
         <div className="gap-4 flex flex-col">
-          {cards.map((card) => {
+          {tasks.map((task) => {
             return (
               <Card
-                key={card.id}
-                id={card.id}
-                title={card.title}
-                statusId={card.statusId}
-                createDate={card.createDate}
-                description={card.description}
+                key={task.id}
+                id={task.id}
+                title={task.title}
+                statusId={task.statusId}
+                createDate={task.createDate}
+                description={task.description}
                 handleOnDeleteTask={handleOnDeleteTask}
               />
             );

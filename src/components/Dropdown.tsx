@@ -17,7 +17,7 @@ const Dropdown = forwardRef(
       <div
         ref={ref}
         style={floatingStyles}
-        className="min-w-80 bg-slate-600 border border-slate-500 rounded p-2"
+        className="min-w-80 rounded p-2 border bg-gray-200 border-slate-400 dark:bg-slate-700"
         {...getFloatingProps()}
       >
         {children}

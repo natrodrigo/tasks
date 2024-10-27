@@ -17,29 +17,33 @@ function App() {
 
   useEffect(() => {
     const getData = async () => {
-      if (supabase) {
-        const { data, error } = await supabase.from("tasks").select("*");
-        if (error) {
-          toast.error(
-            `Erro ao buscar dados de tarefas:${error.message || " "}`
-          );
-          console.error(error);
-          setLoading(false);
-          return;
-        }
-        if (!data?.length) {
-          toast(`Sem dados`);
-          setLoading(false);
-          return;
-        }
-        setTasks(data);
-        setLoading(false);
+      if (!supabase) {
+        toast.error(
+          `Erro ao conectar com servidor`
+        );
+        return;
       }
+      const { data, error } = await supabase.from("tasks").select("*");
+      if (error) {
+        toast.error(
+          `Erro ao buscar dados de tarefas:${error.message || " "}`
+        );
+        console.error(error);
+        setLoading(false);
+        return;
+      }
+      if (!data?.length) {
+        toast(`Sem dados`);
+        setLoading(false);
+        return;
+      }
+      setTasks(data);
+      setLoading(false);
     };
     getData();
   }, [supabase]);
 
-  const onMoveCard = async ({ updatedTask }: { updatedTask: ITask }) => {
+  const onMoveTask = async ({ updatedTask }: { updatedTask: ITask }) => {
     const task = tasks.find((card) => card.id === updatedTask.id);
     if (!task || task?.statusId === updatedTask.statusId) {
       return;
@@ -144,12 +148,12 @@ function App() {
                 return (
                   <CardColumn
                     key={column.id}
-                    cards={tasks.filter(
+                    tasks={tasks.filter(
                       (task) => task.statusId === column.statusId
                     )}
                     title={column.title}
                     statusId={column.statusId}
-                    onMoveCard={onMoveCard}
+                    onMoveTask={onMoveTask}
                     handleOnCreateTask={handleOnCreateTask}
                     handleOnDeleteTask={handleOnDeleteTask}
                   />
